@@ -1,108 +1,104 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getDatabase,
-    ref,
-    push,
-    set,
-    onValue,
-    onChildAdded,
-    onChildRemoved,
-    remove,
-    onDisconnect
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Online</title>
+</head>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC-8z2erXQqogQjN89-qhvvxw3C6KMa-_w",
-    authDomain: "chat-online-65224.firebaseapp.com",
-    databaseURL: "https://chat-online-65224-default-rtdb.europe-west1.firebasedatabase.app/",
-    projectId: "chat-online-65224",
-    storageBucket: "chat-online-65224.firebasestorage.app",
-    messagingSenderId: "606667732591",
-    appId: "1:606667732591:web:ef2ec4c2d747c0cd15bf9a"
-  };
+<body>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  <h2>Chat Online</h2>
 
-  const chat = document.getElementById("chat");
-  const nome = document.getElementById("nome");
-  const mensagem = document.getElementById("mensagem");
-  const botao = document.getElementById("enviar");
-  const onlineCount = document.getElementById("onlineCount");
+  <input id="nome" placeholder="Seu nome">
+  <br><br>
 
-  const chatRef = ref(db, "mensagens");
-  const onlineUsersRef = ref(db, "onlineUsers");
-  const connectedRef = ref(db, ".info/connected");
+  <div id="chat" style="border:1px solid black;height:300px;overflow:auto;padding:10px;"></div>
 
-  // cria uma sessão única para este navegador
-  const myConnectionRef = push(onlineUsersRef);
+  <br>
 
-  // presença online
-  onValue(connectedRef, (snap) => {
-    if (snap.val() === true) {
-      set(myConnectionRef, {
-        online: true,
-        entrouEm: Date.now()
-      });
+  <input id="mensagem" placeholder="Digite algo">
+  <button id="enviar">Enviar</button>
 
-      onDisconnect(myConnectionRef).remove();
-    }
-  });
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      onChildAdded,
+      onChildRemoved,
+      remove
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // conta utilizadores online
-  onValue(onlineUsersRef, (snap) => {
-    const data = snap.val();
-    const total = data ? Object.keys(data).length : 0;
-    onlineCount.textContent = total;
-  });
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-8z2erXQqogQjN89-qhvvxw3C6KMa-_w",
+      authDomain: "chat-online-65224.firebaseapp.com",
+      databaseURL: "https://chat-online-65224-default-rtdb.europe-west1.firebasedatabase.app/",
+      projectId: "chat-online-65224",
+      storageBucket: "chat-online-65224.firebasestorage.app",
+      messagingSenderId: "606667732591",
+      appId: "1:606667732591:web:ef2ec4c2d747c0cd15bf9a"
+    };
 
-  botao.onclick = enviarMensagem;
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  mensagem.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-      enviarMensagem();
-    }
-  });
+    const chat = document.getElementById("chat");
+    const nome = document.getElementById("nome");
+    const mensagem = document.getElementById("mensagem");
+    const botao = document.getElementById("enviar");
 
-  function enviarMensagem() {
-    let n = nome.value.trim();
-    let m = mensagem.value.trim();
+    const chatRef = ref(db, "mensagens");
 
-    if (n === "" || m === "") return;
+    botao.onclick = enviarMensagem;
 
-    const novaMsg = push(chatRef, {
-      nome: n,
-      texto: m
+    mensagem.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        enviarMensagem();
+      }
     });
 
-    mensagem.value = "";
-    mensagem.focus();
+    function enviarMensagem() {
+      let n = nome.value.trim();
+      let m = mensagem.value.trim();
 
-    // apaga a mensagem depois de 3 horas
-    setTimeout(() => {
-      remove(novaMsg);
-    }, 10800000);
-  }
+      if (n === "" || m === "") return;
 
-  onChildAdded(chatRef, (data) => {
-    const msg = data.val();
-    const id = data.key;
+      const novaMsg = push(chatRef, {
+        nome: n,
+        texto: m
+      });
 
-    const p = document.createElement("p");
-    p.id = "msg-" + id;
-    p.innerHTML = "<b>" + msg.nome + ":</b> " + msg.texto;
+      mensagem.value = "";
+      mensagem.focus();
 
-    chat.appendChild(p);
-    chat.scrollTop = chat.scrollHeight;
-  });
-
-  onChildRemoved(chatRef, (data) => {
-    const id = data.key;
-    const elemento = document.getElementById("msg-" + id);
-
-    if (elemento) {
-      elemento.remove();
+      // apaga a mensagem depois de 10 minutos
+      setTimeout(() => {
+        remove(novaMsg);
+      }, 600000);
     }
-  });
-</script>
+
+    onChildAdded(chatRef, (data) => {
+      const msg = data.val();
+      const id = data.key;
+
+      const p = document.createElement("p");
+      p.id = "msg-" + id;
+      p.innerHTML = "<b>" + msg.nome + ":</b> " + msg.texto;
+
+      chat.appendChild(p);
+      chat.scrollTop = chat.scrollHeight;
+    });
+
+    onChildRemoved(chatRef, (data) => {
+      const id = data.key;
+      const elemento = document.getElementById("msg-" + id);
+
+      if (elemento) {
+        elemento.remove();
+      }
+    });
+  </script>
+
+</body>
+</html>
