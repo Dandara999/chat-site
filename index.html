@@ -72,10 +72,10 @@
       mensagem.value = "";
       mensagem.focus();
 
-      // apaga a mensagem depois de 10 minutos
+      // apaga a mensagem depois de 6 horas
       setTimeout(() => {
         remove(novaMsg);
-      }, 6000000);
+      }, 10800000);
     }
 
     onChildAdded(chatRef, (data) => {
