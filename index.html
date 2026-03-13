@@ -9,15 +9,15 @@
 
   <h2>Chat Online</h2>
 
-  <input id="nome" placeholder="Dein Name">
+  <input id="nome" placeholder="Seu nome">
   <br><br>
 
   <div id="chat" style="border:1px solid black;height:300px;overflow:auto;padding:10px;"></div>
 
   <br>
 
-  <input id="mensagem" placeholder="Nachricht eingeben">
-  <button id="enviar">Senden</button>
+  <input id="mensagem" placeholder="Digite algo">
+  <button id="enviar">Enviar</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -72,10 +72,10 @@
       mensagem.value = "";
       mensagem.focus();
 
-      // löscht die Nachricht nach 10 Sekunden
+      // apaga a mensagem depois de 10 minutos
       setTimeout(() => {
         remove(novaMsg);
-      }, 10000);
+      }, 600000);
     }
 
     onChildAdded(chatRef, (data) => {
