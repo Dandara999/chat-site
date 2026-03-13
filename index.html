@@ -61,9 +61,7 @@ const onlineUsersRef = ref(db, "onlineUsers");
 const connectedRef = ref(db, ".info/connected");
 
 onValue(connectedRef, (snap) => {
-
   if (snap.val() === true) {
-
     const myConnectionRef = push(onlineUsersRef);
 
     set(myConnectionRef, {
@@ -73,20 +71,15 @@ onValue(connectedRef, (snap) => {
 
     onDisconnect(myConnectionRef).remove();
   }
-
 });
 
 onValue(onlineUsersRef, (snap) => {
-
   const data = snap.val();
   const total = data ? Object.keys(data).length : 0;
-
   onlineCount.textContent = total;
-
 });
 
 function enviarMensagem() {
-
   let n = nome.value.trim();
   let m = mensagem.value.trim();
 
@@ -100,52 +93,38 @@ function enviarMensagem() {
   mensagem.value = "";
   mensagem.focus();
 
-  // löschen nach 3 Stunden
   setTimeout(() => {
-
     remove(novaMsg);
-
   }, 10800000);
-
 }
 
 botao.addEventListener("click", enviarMensagem);
 
 mensagem.addEventListener("keypress", function(event) {
-
   if (event.key === "Enter") {
     enviarMensagem();
   }
-
 });
 
 onChildAdded(chatRef, (data) => {
-
   const msg = data.val();
   const id = data.key;
 
   const p = document.createElement("p");
-
   p.id = "msg-" + id;
-
   p.innerHTML = "<b>" + msg.nome + ":</b> " + msg.texto;
 
   chat.appendChild(p);
-
   chat.scrollTop = chat.scrollHeight;
-
 });
 
 onChildRemoved(chatRef, (data) => {
-
   const id = data.key;
-
   const elemento = document.getElementById("msg-" + id);
 
   if (elemento) {
     elemento.remove();
   }
-
 });
 
 </script>
