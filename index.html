@@ -2,38 +2,73 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Chat simples</title>
+<title>Chat Online</title>
 </head>
 
 <body>
 
-<h2>Chat</h2>
+<h2>Chat Online</h2>
 
-<div id="chat"></div>
+<input id="nome" placeholder="Seu nome">
+<br><br>
+
+<div id="chat" style="border:1px solid black;height:300px;overflow:auto;padding:10px;"></div>
+
+<br>
 
 <input id="mensagem" placeholder="Digite algo">
-<button onclick="enviar()">Enviar</button>
+<button id="enviar">Enviar</button>
 
-<script>
+<script type="module">
 
-let chat = document.getElementById("chat")
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-function enviar(){
+const firebaseConfig = {
+  apiKey: "AIzaSyC-8z2erXQqogQjN89-qhvvxw3C6KMa-_w",
+  authDomain: "chat-online-65224.firebaseapp.com",
+  databaseURL: "https://chat-online-65224-default-rtdb.firebaseio.com/",
+  projectId: "chat-online-65224",
+  storageBucket: "chat-online-65224.firebasestorage.app",
+  messagingSenderId: "606667732591",
+  appId: "1:606667732591:web:ef2ec4c2d747c0cd15bf9a"
+};
 
-let input = document.getElementById("mensagem")
-let texto = input.value
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-if(texto == "") return
+const chat = document.getElementById("chat");
+const nome = document.getElementById("nome");
+const mensagem = document.getElementById("mensagem");
+const botao = document.getElementById("enviar");
 
-chat.innerHTML += "<p><b>Você:</b> " + texto + "</p>"
+const chatRef = ref(db, "mensagens");
 
-setTimeout(function(){
-chat.innerHTML += "<p><b>Bot:</b> Recebi: " + texto + "</p>"
-},500)
+botao.onclick = function(){
 
-input.value = ""
+let n = nome.value;
+let m = mensagem.value;
+
+if(n == "" || m == "") return;
+
+push(chatRef,{
+nome:n,
+texto:m
+});
+
+mensagem.value = "";
 
 }
+
+onChildAdded(chatRef,(data)=>{
+
+let msg = data.val();
+
+chat.innerHTML += "<p><b>"+msg.nome+":</b> "+msg.texto+"</p>";
+
+chat.scrollTop = chat.scrollHeight;
+
+});
 
 </script>
 
