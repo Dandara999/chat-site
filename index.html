@@ -1,10 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Teste</title>
+<meta charset="UTF-8">
+<title>Chat simples</title>
 </head>
+
 <body>
-  <h1>Funcionou</h1>
+
+<h2>Chat</h2>
+
+<div id="chat"></div>
+
+<input id="mensagem" placeholder="Digite algo">
+<button onclick="enviar()">Enviar</button>
+
+<script>
+
+let chat = document.getElementById("chat")
+
+function enviar(){
+
+let input = document.getElementById("mensagem")
+let texto = input.value
+
+if(texto == "") return
+
+chat.innerHTML += "<p><b>Você:</b> " + texto + "</p>"
+
+setTimeout(function(){
+chat.innerHTML += "<p><b>Bot:</b> Recebi: " + texto + "</p>"
+},500)
+
+input.value = ""
+
+}
+
+</script>
+
 </body>
 </html>
